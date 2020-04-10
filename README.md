@@ -2,17 +2,17 @@
 
 
 
-![image-20200409204235644](C:\Users\FengZeng\AppData\Roaming\Typora\typora-user-images\image-20200409204235644.png)
+![image-20200409204235644](doc/image-20200409204235644.png)
 
 ###### 从美术给到的动作资源，一键导出
 
-![image-20200409204653456](C:\Users\FengZeng\AppData\Roaming\Typora\typora-user-images\image-20200409204653456.png)
+![image-20200409204653456](doc/image-20200409204653456.png)
 
 
 
 ###### 导出已经存在的预设
 
-![image-20200409204950267](C:\Users\FengZeng\AppData\Roaming\Typora\typora-user-images\image-20200409204950267.png)
+![image-20200409204950267](doc/image-20200409204950267.png)
 
 
 
@@ -20,13 +20,13 @@
 
 ### 资源放置
 
-![image-20200409203819180](C:\Users\FengZeng\AppData\Roaming\Typora\typora-user-images\image-20200409203819180.png)
+![image-20200409203819180](doc/image-20200409203819180.png)
 
 
 
 ### Shader放置
 
-![image-20200409203943939](C:\Users\FengZeng\AppData\Roaming\Typora\typora-user-images\image-20200409203943939.png)
+![image-20200409203943939](doc/image-20200409203943939.png)
 
 
 
