@@ -54,7 +54,7 @@ public class GPUSkinningExportList : MonoBehaviour
             return;
         }
 
-        if(currentSampler == null)
+        if(currentSampler == null && prefabList != null && index < prefabList.Length)
         {
             currentPrefab = prefabList[index];
             currentGO = GameObject.Instantiate<GameObject>(prefabList[index]);

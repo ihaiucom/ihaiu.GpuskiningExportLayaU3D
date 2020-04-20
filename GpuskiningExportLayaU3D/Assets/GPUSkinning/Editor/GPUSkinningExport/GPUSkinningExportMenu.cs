@@ -227,7 +227,7 @@ namespace GPUSkingings
         {
             string dirPath = "Assets/GameResources/GPUSkinning";
             //string outDir = "../Unity3DExport/res3d/GPUSkinning-30";
-            string outDir = ExportGameResourcesSettings.Instance.res3dConventionalPath;
+            string outDir = ExportGameResourcesSettings.Instance.res3dGpuskiningPath;
             if (!Directory.Exists(dirPath))
             {
                 Debug.Log("不存在该目录:" + dirPath);
@@ -288,6 +288,7 @@ namespace GPUSkingings
                 string src = filePath;
                 string dest = outDir + "/" + Path.GetFileName(filePath).Replace("_Laya_Texture_", "_").Replace(".bytes", "_MatrixTexture.bin");
                 File.Copy(src, dest, true);
+                Debug.Log(dest);
             }
             Debug.Log("MatrixTexture.Count=" + fileList.Length);
         }

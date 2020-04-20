@@ -27,7 +27,7 @@
     <Ios>False</Ios>
     <Android>False</Android>
     <Conventional>True</Conventional>
-    <SavePath>../../client/client/Game/bin/</SavePath>
+    <SavePath>../_tmp/</SavePath>
     <ScrollPositionY>0</ScrollPositionY>
   </config1>
   <config2>
@@ -155,5 +155,5 @@
     <ScrollPositionY>0</ScrollPositionY>
   </config5>
   <language>1</language>
-  <time>1586431403</time>
+  <time>1587350335</time>
 </LayaExportSetting>

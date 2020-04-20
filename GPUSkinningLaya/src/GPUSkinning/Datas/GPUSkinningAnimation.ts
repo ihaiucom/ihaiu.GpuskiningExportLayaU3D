@@ -60,6 +60,7 @@ export default class GPUSkinningAnimation extends Laya.Resource
         b.pos = 0;
 
         this.guid = b.readUTFString();
+        this.guid += Random.range(0, 99999).toString();
         this.name = b.readUTFString();
         this.rootBoneIndex = b.readInt16();
         this.textureWidth = b.readUint32();

@@ -53,7 +53,7 @@ export default class GPUSkining
       // Shader3D.addInclude("GPUSkinningInclude4.glsl", GPUSkinningIncludegGLSL);
 
       GPUSkinningBaseMaterial.__initDefine__();
-      // await GPUSkinningUnlitMaterial.install();
+      await GPUSkinningUnlitMaterial.install();
       // await GPUSkinningCartoonMaterial.install();
       await GPUSkinningCartoon2TextureMaterial.install();
 

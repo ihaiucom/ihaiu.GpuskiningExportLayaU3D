@@ -75,6 +75,7 @@ public class GPUSkinningSetPrefab
             {
                 animatorGO.name = name;
             }
+            name = animatorGO.name = animatorGO.name.Replace("(Clone)", "");
             gpuskinningPrefabPath = SetGPUSkinningSamplerPrefab(animatorGO, name);
             GameObject.DestroyImmediate(animatorGO);
         }

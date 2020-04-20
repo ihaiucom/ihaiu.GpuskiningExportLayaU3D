@@ -725,6 +725,7 @@
             var b = new Byte$2(arrayBuffer);
             b.pos = 0;
             this.guid = b.readUTFString();
+            this.guid += Random.range(0, 99999).toString();
             this.name = b.readUTFString();
             this.rootBoneIndex = b.readInt16();
             this.textureWidth = b.readUint32();
@@ -2000,7 +2001,7 @@
             this._enableVertexColor = false;
             this.setShaderName(GPUSkinningUnlitMaterial.shaderName);
             this._shaderValues.setVector(GPUSkinningUnlitMaterial.ALBEDOCOLOR, new Vector4$2(1.0, 1.0, 1.0, 1.0));
-            this.renderMode = GPUSkinningUnlitMaterial.RENDERMODE_OPAQUE;
+            this.renderMode = GPUSkinningUnlitMaterial.RENDERMODE_TRANSPARENT;
         }
         static async install() {
             if (this._isInstalled) {
@@ -2261,7 +2262,7 @@
                 case GPUSkinningUnlitMaterial.RENDERMODE_TRANSPARENT:
                     this.renderQueue = Material.RENDERQUEUE_TRANSPARENT;
                     this.alphaTest = false;
-                    this.depthWrite = false;
+                    this.depthWrite = true;
                     this.cull = RenderState.CULL_BACK;
                     this.blend = RenderState.BLEND_ENABLE_ALL;
                     this.blendSrc = RenderState.BLENDPARAM_SRC_ALPHA;
@@ -2858,6 +2859,7 @@
             var GPUSkinningIncludegGLSL = await GPUSkinningBaseMaterial.loadShaderGlslAsync("GPUSkinningInclude");
             Shader3D$5.addInclude("GPUSkinningInclude.glsl", GPUSkinningIncludegGLSL);
             GPUSkinningBaseMaterial.__initDefine__();
+            await GPUSkinningUnlitMaterial.install();
             await GPUSkinningCartoon2TextureMaterial.install();
             LayaExtends_Node.Init();
             Laya3D.SKING_MESH = "SKING_MESH";
@@ -3025,25 +3027,202 @@
     window['GPUSkining'] = GPUSkining;
     window['SceneMaterial'] = SceneMaterial;
 
+    class GPUSkiningAvatar extends Laya.Sprite3D {
+        constructor() {
+            super(...arguments);
+            this.list = [];
+        }
+        get clips() {
+            if (this.main) {
+                return this.main.anim.clips;
+            }
+        }
+        FindJoint(boneName) {
+            if (this.main) {
+                return this.main.Player.FindJoint(boneName);
+            }
+        }
+        FindJointGameObject(boneName) {
+            if (this.main) {
+                return this.main.Player.FindJointGameObject(boneName);
+            }
+        }
+        Play(clipName, nomrmalizeTime = 0) {
+            for (var i = 0, len = this.list.length; i < len; i++) {
+                this.list[i].Player.Play(clipName, nomrmalizeTime);
+            }
+        }
+        Stop() {
+            for (var i = 0, len = this.list.length; i < len; i++) {
+                this.list[i].Player.Stop();
+            }
+        }
+        Resume() {
+            for (var i = 0, len = this.list.length; i < len; i++) {
+                this.list[i].Player.Resume();
+            }
+        }
+        async loadAvatarAsync(avatarConfigs) {
+            for (var item of avatarConfigs) {
+                await this.loadAvatarItemAsync(item);
+            }
+        }
+        async loadAvatarItemAsync(avatarConfig) {
+            var parent = this;
+            if (avatarConfig.join && avatarConfig.join != "") {
+                var join = this.FindJointGameObject(avatarConfig.join);
+                if (join)
+                    parent = join;
+            }
+            if (avatarConfig.isGpusking) {
+                var mono = await GPUSkining.CreateByNameAsync(avatarConfig.name, false, GPUSkinningUnlitMaterial);
+                if (avatarConfig.isMain) {
+                    this.main = mono;
+                }
+                this.list.push(mono);
+                parent.addChild(mono.owner);
+            }
+            else {
+                var sprite = await this.loadAsync(avatarConfig.name);
+                if (sprite) {
+                    sprite = sprite.clone();
+                    parent.addChild(sprite);
+                }
+            }
+        }
+        async loadAsync(path) {
+            return new Promise((resolve) => {
+                Laya.Sprite3D.load(path, Laya.Handler.create(null, (res) => {
+                    setTimeout(() => {
+                        resolve(res);
+                    }, 16);
+                }));
+            });
+        }
+        rotaitonStart() {
+            this._rotaitonCur = this.transform.localRotationEuler;
+            Laya.timer.frameLoop(1, this, this.onRotaitonLoop);
+        }
+        rotaitonStop() {
+            this.transform.localRotationEuler = this._rotaitonSrc;
+            Laya.timer.clear(this, this.onRotaitonLoop);
+        }
+        onRotaitonLoop() {
+            this._rotaitonCur.y += 1;
+            this.transform.localRotationEuler = this._rotaitonCur;
+        }
+        startRandomPlayClip() {
+            if (this.clips.length > 0) {
+                Laya.timer.once(Random.range(2000, 5000), this, this.onRandomPlayClip);
+            }
+        }
+        stopRandomPlayClip() {
+            Laya.timer.clear(this, this.onRotaitonLoop);
+        }
+        onRandomPlayClip() {
+            var i = Random.range(0, this.clips.length);
+            i = Math.floor(i);
+            this.Play(this.clips[i].name);
+            this.startRandomPlayClip();
+        }
+    }
+
     class TestShader {
         constructor() {
             this.scene = TestScene.create();
             Laya.stage.addChild(this.scene);
-            this.InitAsync();
+            this.InitGpuskingAsync();
         }
         async InitAsync() {
             GPUSkining.resRoot = "res3d/GPUSKinning-30/";
             await GPUSkining.InitAsync();
+            var wuqi = await this.loadAsync("res3d/Conventional/zhanji_wuqi.lh");
             var nameList = [
-                "Hero_1004_Dongzhuo_Skin1",
+                "zhanji_belt",
+                "zhanji_cibang",
+                "zhanji_head",
+                "zhanji_lower",
+                "zhanji_necklace",
+                "zhanji_upper",
             ];
+            var upper;
+            var cibang;
             for (var j = 0; j < nameList.length; j++) {
-                var mono = await GPUSkining.CreateByNameAsync(nameList[j], true);
+                var resId = nameList[j];
+                var mono = await GPUSkining.CreateByNameAsync(nameList[j], false, GPUSkinningUnlitMaterial);
                 window['mono'] = mono;
-                mono.Player.Play("Idle");
+                mono.Player.Play("idle");
                 this.scene.addChild(mono.owner);
-                break;
+                if (resId == "zhanji_upper") {
+                    upper = mono;
+                }
+                else if (resId == "zhanji_cibang") {
+                    cibang = mono;
+                }
             }
+            var join = upper.Player.FindJointGameObject("D_Chest");
+            join.addChild(cibang.owner);
+            cibang.gameObject.transform.localPosition = new Laya.Vector3();
+            cibang.gameObject.transform.localRotationEuler = new Laya.Vector3();
+            var weaponR = upper.Player.FindJointGameObject("D_R_weapon");
+            var weaponL = upper.Player.FindJointGameObject("D_L_weapon");
+            var wuqiR = wuqi.clone();
+            var wuqiL = wuqi.clone();
+            weaponR.addChild(wuqiR);
+            weaponL.addChild(wuqiL);
+        }
+        async InitGpuskingAsync(pos) {
+            GPUSkining.resRoot = "res3d/GPUSKinning-30/";
+            await GPUSkining.InitAsync();
+            for (var z = 0; z < 2; z++) {
+                for (var x = 0; x < 10; x++) {
+                    var pos = new Laya.Vector3(x - 5, 0, z);
+                    await this.InitTestZhanjiAsync(pos, true);
+                }
+            }
+        }
+        async InitTestZhanjiAsync(pos, isRandome) {
+            var avatarConfigs = [
+                { name: "zhanji_upper", isGpusking: true, isMain: true },
+                { name: "zhanji_belt", isGpusking: true },
+                { name: "zhanji_head", isGpusking: true },
+                { name: "zhanji_lower", isGpusking: true },
+                { name: "zhanji_necklace", isGpusking: true },
+                { name: "zhanji_cibang", isGpusking: true, join: "D_Chest" },
+                { name: "res3d/Conventional/zhanji_wuqi.lh", isGpusking: false, join: "D_R_weapon" },
+                { name: "res3d/Conventional/zhanji_wuqi.lh", isGpusking: false, join: "D_L_weapon" },
+            ];
+            var avatarConfigs2 = [
+                { name: "zhanji_upper2", isGpusking: true, isMain: true },
+                { name: "zhanji_belt2", isGpusking: true },
+                { name: "zhanji_head2", isGpusking: true },
+                { name: "zhanji_lower2", isGpusking: true },
+                { name: "zhanji_necklace2", isGpusking: true },
+                { name: "zhanji_cibang2", isGpusking: true, join: "D_Chest" },
+                { name: "res3d/Conventional/zhanji_wuqi.lh", isGpusking: false, join: "D_R_weapon" },
+                { name: "res3d/Conventional/zhanji_wuqi.lh", isGpusking: false, join: "D_L_weapon" },
+            ];
+            if (isRandome) {
+                for (var i = 0; i < avatarConfigs2.length; i++) {
+                    if (Math.random() < 0.5) {
+                        avatarConfigs[i] = avatarConfigs2[i];
+                    }
+                }
+            }
+            var avatar = new GPUSkiningAvatar();
+            await avatar.loadAvatarAsync(avatarConfigs);
+            this.scene.addChild(avatar);
+            avatar.startRandomPlayClip();
+            if (pos) {
+                avatar.transform.position = pos;
+            }
+        }
+        async loadAsync(path) {
+            return new Promise((resolve) => {
+                Laya.Sprite3D.load(path, Laya.Handler.create(null, (res) => {
+                    resolve(res);
+                }));
+            });
         }
     }
 

@@ -454,7 +454,7 @@ export class GPUSkinningUnlitMaterial extends GPUSkinningBaseMaterial
 			case GPUSkinningUnlitMaterial.RENDERMODE_TRANSPARENT:
 				this.renderQueue = Material.RENDERQUEUE_TRANSPARENT;
 				this.alphaTest = false;
-				this.depthWrite = false;
+				this.depthWrite = true;
 				this.cull = RenderState.CULL_BACK;
 				this.blend = RenderState.BLEND_ENABLE_ALL;
 				this.blendSrc = RenderState.BLENDPARAM_SRC_ALPHA;
@@ -545,7 +545,7 @@ export class GPUSkinningUnlitMaterial extends GPUSkinningBaseMaterial
 		super();
 		this.setShaderName(GPUSkinningUnlitMaterial.shaderName);
 		this._shaderValues.setVector(GPUSkinningUnlitMaterial.ALBEDOCOLOR, new Vector4(1.0, 1.0, 1.0, 1.0));
-		this.renderMode = GPUSkinningUnlitMaterial.RENDERMODE_OPAQUE;
+		this.renderMode = GPUSkinningUnlitMaterial.RENDERMODE_TRANSPARENT;
 
 		// this._shaderValues.addDefine(Shader3D.getDefineByName("SKIN_4"));
 		

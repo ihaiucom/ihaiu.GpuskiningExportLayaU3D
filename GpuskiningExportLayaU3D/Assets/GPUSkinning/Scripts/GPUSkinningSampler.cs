@@ -13,56 +13,6 @@ public class GPUSkinningSampler : MonoBehaviour
 {
 #if UNITY_EDITOR
 
-    //public Dictionary<string, string> animClipNameDict= null;
-    //public Dictionary<string, string> AnimClipNameDict
-    //{
-    //    get
-    //    {
-    //        if(animClipNameDict == null)
-    //        {
-    //            string[] list = new string[] {
-    //            "Air_Throw_01",
-    //            "ATTACK_01",
-    //            "ATTACK_02",
-    //            "ATTACK_03",
-    //            "ATTACK_04",
-    //            "Block",
-    //            "CHANGE",
-    //            "Dash_Attack",
-    //            "DEAD",
-    //            "DODGE",
-    //            "Get_up",
-    //            "GROUND_BEHIT_01",
-    //            "GROUND_BEHIT_02",
-    //            "Idle",
-    //            "JUMP",
-    //            "Jump_Attack",
-    //            "LEAVE",
-    //            "LOSE",
-    //            "PICK_UP",
-    //            "Run",
-    //            "SKILL_02",
-    //            "SKILL_03",
-    //            "Skill_ult",
-    //            "SKIN",
-    //            "STUN",
-    //            "WIN",
-    //            "Skill_05",
-    //            "SKILL_01",
-    //            "Skill_04"
-    //            };
-    //            animClipNameDict = new Dictionary<string, string>();
-    //            animClipNameDict.Add("Air_Throw_01".ToLower(), "Air_Throw_01");
-    //            animClipNameDict.Add("ATTACK_01".ToLower(), "Attack_01");
-    //            animClipNameDict.Add("ATTACK_01".ToLower(), "Attack_01");
-
-
-
-
-    //        }
-    //        return animClipNameDict;
-    //    }
-    //}
 
     [HideInInspector]
     [SerializeField]
@@ -643,8 +593,11 @@ public class GPUSkinningSampler : MonoBehaviour
             fileStream.Dispose();
 
 
-            var assetPath = savedPath.Replace('\\', '/');
-            assetPath = "Assets" + assetPath.Substring(Application.dataPath.Length);
+            //var assetPath = savedPath.Replace('\\', '/');
+            //if(assetPath.StartsWith(Application.dataPath.Replace('\\', '/')))
+            //{
+            //    assetPath = "Assets" + assetPath.Substring(Application.dataPath.Length);
+            //}
 
             this.textureLaya = AssetDatabase.LoadAssetAtPath<TextAsset>(savedPath);
         }
